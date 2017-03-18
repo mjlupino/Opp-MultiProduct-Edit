@@ -1,0 +1,41 @@
+
+<!-- Created by Michael Lupino 7/20/2015 -->
+<apex:page StandardController="Opportunity" Extensions="ProductEditPageController"> 
+<apex:sectionHeader title="New Customer Opportunity" subtitle="Opportunity/Product Edit"/>
+    Opportunity Name: {!opportunityobj.Name}: <BR>
+    </BR>
+    <apex:form >
+    <apex:pageMessages id="msg" />
+        <apex:pageBlock title="Opportunity information" mode="edit">
+        <apex:pageBlockSection title="Opportunity" columns="2">
+        <apex:inputField id="opportunityName" value="{!opportunityobj.Name}"/>
+            <apex:inputField value="{!opportunityobj.Accountid}"/>
+            <apex:inputField id="opportunityType" value="{!opportunityobj.type}"/>
+            <apex:inputField id="opportunityLeadSource" value="{!opportunityobj.LeadSource}"/>
+            <apex:inputField id="opportunityProbability" value="{!opportunityobj.Probability}"/>
+            <apex:inputField value="{!opportunityobj.Amount}"/>
+            <apex:inputField value="{!opportunityobj.StageName}"/>
+        </apex:pageBlockSection>
+        </apex:pageBlock>
+        
+    <apex:pageBlock title="Products" mode="edit">
+    <apex:pageBlockTable value="{!opportunitylineObj}" var="olObj">
+         <!-- A PageBlockSection for Entry and Display of Product Values --> 
+        <apex:column headerValue="Product"> 
+          {!olObj.Name} </apex:column>
+         
+          <apex:column headerValue="Quantity">   <apex:inputText value="{!olObj.Quantity}"/> </apex:column> 
+              <apex:column headerValue="UnitPrice">   <apex:inputText value="{!olObj.UnitPrice}"/> </apex:column> 
+            <apex:column headerValue="Date">   <apex:inputField value="{!olObj.ServiceDate}"/> </apex:column> 
+           <apex:column headerValue="Description">   <apex:inputText value="{!olObj.Description}"/> </apex:column> 
+           
+            </apex:pageBlockTable>
+    </apex:pageBlock>
+    <apex:pageBlock >  
+    <apex:pageBlockButtons location="bottom">
+   <apex:commandButton action="{!cloneOpportunityRecord}" value="Clone" reRender="msg"/>
+   <apex:commandButton action="{!saveOpportunityRecord}" value="Save" reRender="msg"/>
+   <apex:commandButton action="{!cancelBtn}" value="Cancel" reRender="msg"/>
+   </apex:pageBlockButtons></apex:pageBlock> 
+    </apex:form>
+</apex:page>
