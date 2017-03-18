@@ -1,0 +1,83 @@
+/**
+*@purpose : Apex Controller responsible for entry of product records using inline edit
+*@author :  Michael Lupino
+**/
+public with sharing class ProductEditPageController {
+
+    public list<opportunitylineitem> opportunitylineObj{get;set;}
+    public list<opportunitylineitem> opportunitylineItemList=new List<opportunitylineitem>();
+    public Opportunity opp=new Opportunity();
+    public opportunity opportunityobj{get;set;}
+    String opportunityId;
+    public String message{get;set;}
+     /**
+    *@purpose : Constructor to fetch current opportunity Record and retrieve row
+    **/
+  
+   public ProductEditPageController(ApexPages.StandardController controller) {
+ message = '';
+    opportunityId =controller.getRecord().Id;
+    opportunityobj= [SELECT Id, Name, LeadSource, Probability, Type,Description,Amount,CloseDate,StageName,AccountId FROM Opportunity WHERE Id =:OpportunityId];
+      // Fetching the Opportunity Id
+         if(opportunityId != NULL){
+         opportunitylineObj= [SELECT Id,PricebookEntryId,opportunityid,Quantity,UnitPrice,ListPrice,ServiceDate,Product2Id,Discount,Description,Name FROM opportunitylineitem WHERE OpportunityId =:opportunityid];
+
+      }
+    }
+  
+   /**
+    *@purpose : Method for Saving the opportunity line item Record 
+    **/
+     public PageReference saveOpportunityRecord(){
+      try{
+      update opportunityobj;
+     update opportunitylineObj;
+     PageReference nextpage= new PageReference('/'+opportunityobj.id);
+         nextpage.setRedirect(true);
+         
+           return nextpage;
+      }
+      Catch(Exception e)
+      {
+      message+='Error during Saveg...';
+            ApexPages.addMessage( new ApexPages.Message(ApexPages.Severity.ERROR, message));
+            return null;
+      }
+      }
+   public PageReference cloneOpportunityRecord(){
+      try{
+     
+     opp=opportunityobj.clone(false,true,false,false);
+      insert opp;
+     
+      if(opportunitylineObj.size()>0&&opportunitylineObj!=null)
+      {
+      OpportunityLineItemList=opportunitylineObj.deepClone(false,false,false);
+      for(OpportunityLineItem oli: OpportunityLineItemList)
+      {
+      oli.Opportunityid=opp.Id;
+      
+      }
+         insert OpportunityLineItemList;
+          
+         }
+         PageReference nextpage= new PageReference('/'+opp.id);
+         nextpage.setRedirect(true);
+         System.debug('nextpage'+nextpage);
+           return nextpage;
+      }
+      catch(Exception e){
+            message+='Error during Saveg...';
+            ApexPages.addMessage( new ApexPages.Message(ApexPages.Severity.ERROR, message));
+            return null;
+        }
+   }
+    public PageReference cancelBtn()
+      {
+      PageReference nextpage= new PageReference('/'+ opportunityobj.id);
+         nextpage.setRedirect(true);
+         
+           return nextpage;
+   
+      }
+}
